@@ -36,6 +36,7 @@ type listenHandlerFn func(payload Payload) error
 type Supports struct {
 	Kafka *KafkaOptions
 	Redis *RedisOptions
+	Amqp  *AmqpOptions
 }
 
 type Options struct {
@@ -54,9 +55,9 @@ func NewEventBus(opt Options) EventBus {
 	case AmqpDriver:
 		return newAmqpEventBus(opt)
 	default:
-		log.Fatalf("Invalid drive mode.")
+		log.Fatalf("Invalid driver mode.")
 	}
-	
+
 	return nil
 }
 
@@ -69,11 +70,11 @@ func newRedisEventBus(opt Options) EventBus {
 		DB:       opt.Supports.Redis.DB,
 		Prefix:   opt.Prefix,
 	}
-	
+
 	if opt.Supports.Redis.Prefix != "" {
 		option.Prefix = opt.Supports.Redis.Prefix
 	}
-	
+
 	return NewRedisEventBus(option)
 }
 
@@ -83,17 +84,29 @@ func newKafkaEventBus(opt Options) EventBus {
 		Addrs:  opt.Supports.Kafka.Addrs,
 		Prefix: opt.Prefix,
 	}
-	
+
 	if opt.Supports.Kafka.Prefix != "" {
 		option.Prefix = opt.Supports.Kafka.Prefix
 	}
-	
+
 	return NewKafkaEventBus(option)
 }
 
 // Create a event bus instance by amqp.
 func newAmqpEventBus(opt Options) EventBus {
-	return nil
+	option := AmqpOptions{
+		Addr:     opt.Supports.Amqp.Addr,
+		Username: opt.Supports.Amqp.Username,
+		Password: opt.Supports.Amqp.Password,
+		Vhost:    opt.Supports.Amqp.Vhost,
+		Prefix:   opt.Prefix,
+	}
+
+	if opt.Supports.Amqp.Prefix != "" {
+		option.Prefix = opt.Supports.Amqp.Prefix
+	}
+
+	return NewAmqpEventBus(option)
 }
 
 type BaseEventBus struct {
@@ -104,12 +117,12 @@ type BaseEventBus struct {
 // Wait Synchronous waiting.
 func (e *BaseEventBus) Wait() {
 	signal.Notify(e.signalChan, syscall.SIGINT, syscall.SIGTERM)
-	
+
 	go func() {
 		<-e.signalChan
 		e.doneChan <- true
 	}()
-	
+
 	<-e.signalChan
 }
 

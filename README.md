@@ -1,5 +1,5 @@
 # Event Bus
-git
+An event bus library that supports kafka, redis, amqp
 
 ## Use
 
