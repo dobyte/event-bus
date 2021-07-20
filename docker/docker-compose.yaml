@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+    kafka:
+        image: wurstmeister/kafka
+        hostname: kafka
+        environment:
+            KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+            KAFKA_ADVERTISED_PORT: 9092
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_CREATE_TOPICS: "events:1:1"
+        ports:
+            - "9092:9092"
+        depends_on:
+            - zookeeper
+    zookeeper:
+        image: oddpoet/zookeeper
+        hostname: zookeeper
+        command:
+            - "2181"
+        ports:
+            - "2181:2181"
+    rabbitmq:
+        image: 'rabbitmq:3-management'
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest
+        ports:
+            - 5672:5672
+            - 15672:15672
+            - 25672:25672
