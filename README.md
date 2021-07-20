@@ -15,7 +15,7 @@ API
 // Emit Send data to topic.
 Emit(topic string, payload interface{}) error
 // Listen Monitor data on topic.
-Listen(topic string, handler listenHandlerFn) error
+Listen(topic string, handler ListenHandlerFn) error
 // Wait Synchronous waiting.
 Wait()
 // Exit Exit monitoring.

@@ -18,7 +18,7 @@ type EventBus interface {
 	// Emit Send data to topic.
 	Emit(topic string, payload interface{}) error
 	// Listen Monitor data on topic.
-	Listen(topic string, handler listenHandlerFn) error
+	Listen(topic string, handler ListenHandlerFn) error
 	// Wait Synchronous waiting.
 	Wait()
 	// Exit Exit monitoring.
@@ -31,7 +31,7 @@ const (
 	AmqpDriver  = "amqp"
 )
 
-type listenHandlerFn func(payload Payload) error
+type ListenHandlerFn func(payload Payload) error
 
 type Supports struct {
 	Kafka *KafkaOptions

@@ -78,7 +78,7 @@ func (e *AmqpEventBus) Emit(topic string, payload interface{}) error {
 }
 
 // Listen Monitor data on topic.
-func (e *AmqpEventBus) Listen(topic string, handler listenHandlerFn) error {
+func (e *AmqpEventBus) Listen(topic string, handler ListenHandlerFn) error {
 	topic = e.prefixTopic(topic)
 
 	err := e.channel.ExchangeDeclare(topic, amqp.ExchangeFanout, true, false, false, false, nil)
@@ -103,7 +103,7 @@ func (e *AmqpEventBus) Listen(topic string, handler listenHandlerFn) error {
 
 	go func() {
 		for delivery := range messages {
-			go func(delivery amqp.Delivery, handler listenHandlerFn) {
+			go func(delivery amqp.Delivery, handler ListenHandlerFn) {
 				if err := handler(Payload{
 					Value: delivery.Body,
 				}); err != nil {

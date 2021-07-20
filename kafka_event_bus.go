@@ -29,7 +29,7 @@ type KafkaEventBus struct {
 	Emitter  sarama.AsyncProducer
 	prefix   string
 	locker   sync.Mutex
-	handlers map[string][]listenHandlerFn
+	handlers map[string][]ListenHandlerFn
 }
 
 func NewKafkaEventBus(opt KafkaOptions) EventBus {
@@ -56,7 +56,7 @@ func NewKafkaEventBus(opt KafkaOptions) EventBus {
 	bus.prefix = opt.Prefix
 	bus.signalChan = make(chan os.Signal, 1)
 	bus.doneChan = make(chan bool, 1)
-	bus.handlers = make(map[string][]listenHandlerFn)
+	bus.handlers = make(map[string][]ListenHandlerFn)
 	
 	return bus
 }
@@ -79,14 +79,14 @@ func (e *KafkaEventBus) Emit(topic string, payload interface{}) error {
 }
 
 // Listen Monitor data on topic.
-func (e *KafkaEventBus) Listen(topic string, handler listenHandlerFn) error {
+func (e *KafkaEventBus) Listen(topic string, handler ListenHandlerFn) error {
 	isListened := false
 	
 	e.locker.Lock()
 	if _, ok := e.handlers[topic]; ok {
 		isListened = true
 	} else {
-		e.handlers[topic] = make([]listenHandlerFn, 0)
+		e.handlers[topic] = make([]ListenHandlerFn, 0)
 	}
 	e.handlers[topic] = append(e.handlers[topic], handler)
 	e.locker.Unlock()
@@ -108,7 +108,7 @@ func (e *KafkaEventBus) Listen(topic string, handler listenHandlerFn) error {
 				
 				for message := range pc.Messages() {
 					for _, handler := range e.handlers[topic] {
-						go func(message *sarama.ConsumerMessage, handler listenHandlerFn) {
+						go func(message *sarama.ConsumerMessage, handler ListenHandlerFn) {
 							if err := handler(Payload{
 								Value: message.Value,
 							}); err != nil {

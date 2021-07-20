@@ -53,7 +53,7 @@ func (e *RedisEventBus) Emit(topic string, payload interface{}) error {
 }
 
 // Listen Monitor data on topic.
-func (e *RedisEventBus) Listen(topic string, handler listenHandlerFn) error {
+func (e *RedisEventBus) Listen(topic string, handler ListenHandlerFn) error {
 	var (
 		ctx    = context.Background()
 		pubSub = e.client.Subscribe(ctx, e.prefixTopic(topic))
