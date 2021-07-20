@@ -29,3 +29,11 @@ services:
             - 5672:5672
             - 15672:15672
             - 25672:25672
+    redis-cluster:
+        image: grokzen/redis-cluster
+        environment:
+            - IP=0.0.0.0
+            - STANDALONE=true
+            - SENTINEL=true
+        ports:
+            - 7000-7005:7000-7005
